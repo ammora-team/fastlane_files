@@ -58,10 +58,11 @@ platform :ios do
     if (readonly.nil? && (password.nil? || password.empty?))
       readonly = true
     end
-    username = ENV['APPLE_USER_CI']
+
+    username = ENV['APPLE_USER']
     if (!username.empty?)
       match(
-        username: ENV['APPLE_USER_CI'],
+        username: username,
         app_identifier: ENV['APP_IDENTIFIER'],
         readonly: readonly,
         type: type
@@ -116,13 +117,33 @@ platform :ios do
 
     options = build(options)
 
+    username = ENV['APPLE_USER'] ? ENV['APPLE_USER'] : ENV['APPLE_USER_DELIVER']
     upload_to_testflight(
-      username: ENV['APPLE_USER_CI'],
+      username: username,
       app_identifier: ENV['APP_IDENTIFIER'],
       skip_submission: true
     )
 
     after_ios_staging(options)
+  end
+
+  lane :prod do |options|
+    options[:env] = 'prod'
+
+    before_ios_prod(options)
+
+    options = build(options)
+
+    username = ENV['APPLE_USER'] ? ENV['APPLE_USER'] : ENV['APPLE_USER_DELIVER']
+
+    upload_to_app_store(
+      username: username,
+      app_identifier: ENV['APP_IDENTIFIER'],
+      skip_metadata: true,
+      skip_screenshots: true
+    )
+
+    after_ios_prod(options)
   end
 end
 

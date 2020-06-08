@@ -5,7 +5,25 @@ platform :ios do
   end
 
   lane :generate_artifact do |options|
-    UI.success "generate artifact"
+    export = 'development'
+    configuration = 'Debug'
+
+    scheme = options[:scheme] ? options[:scheme] : ENV['APP_SCHEME']
+    workspace = options[:workspace] ? options[:workspace] : ENV['APP_WORKSPACE']
+
+    if (options[:env] === 'staging' && options[:env] === 'prod')
+      export = 'app-store'
+      configuration = 'Release'
+    end
+
+    # build
+    build_app(
+      scheme: scheme,
+      export_method: export,
+      configuration: configuration,
+      workspace: workspace,
+      clean: true
+    )
   end
 
 end
