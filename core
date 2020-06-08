@@ -77,6 +77,9 @@ platform :ios do
   lane :requirements do
   end
 
+  lane :generate_artifact do
+  end
+
   lane :prepare do |options|
     requirements
     generate_google_services
