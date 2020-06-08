@@ -1,4 +1,4 @@
-import('./core')
+# import from git dependencies core
 
 platform :ios do
   lane :generate_artifact do |options|
