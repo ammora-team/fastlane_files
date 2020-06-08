@@ -1,0 +1,156 @@
+lane :gpg_decrypt do |options|
+  file = options[:file]
+  extension = file[-4..-1]
+  output = file
+  split = output.split("->")
+  isGpg = false
+
+  if (split.length > 2)
+    UI.user_error!("Invalid file.")
+  end
+
+  if (split.length === 2)
+    output = split[1].strip
+    file = split[0].strip
+    isGpg = true
+  elsif (extension == '.gpg')
+    isGpg = true
+    output = output[0..-5]
+  end
+
+  if (!isGpg)
+    return output
+  end
+
+  passphrase = options[:passphrase]
+  gpg_cmd = `which gpg`
+
+  if (gpg_cmd.empty?)
+    UI.user_error!("'gpg' command not found")
+  else
+    Dir.chdir ".." do
+      sh("gpg",  "--batch", "--yes", "--passphrase", passphrase , "--output", output, "--decrypt", file, log: false)
+    end
+    UI.success "GPG Decrypt OK"
+  end
+
+  output
+end
+
+platform :ios do
+  lane :generate_google_services do
+    if (ENV.key?('GOOGLE_SERVICES_PLIST'))
+      gpg_decrypt( file: ENV['GOOGLE_SERVICES_PLIST'], passphrase: ENV['GPG_PASSPHRASE'] )
+    end
+  end
+
+  lane :certificate do |options|
+    if (ENV.key?('MATCH_TYPE'))
+      type = ENV['MATCH_TYPE']
+    end
+
+    if (options[:type])
+      type = options[:type]
+    end
+
+    readonly = ENV['MATCH_READONLY']
+    password = ENV['FASTLANE_PASSWORD']
+    if (readonly.nil? && (password.nil? || password.empty?))
+      readonly = true
+    end
+    username = ENV['APPLE_USER_CI']
+    if (!username.empty?)
+      match(
+        username: ENV['APPLE_USER_CI'],
+        app_identifier: ENV['APP_IDENTIFIER'],
+        readonly: readonly,
+        type: type
+      )
+    end
+  end
+
+  lane :certificates do
+    certificate( type: "development" )
+    certificate( type: "appstore" )
+  end
+
+  lane :requirements do
+  end
+
+  lane :generate_artifact do
+  end
+
+  lane :prepare do |options|
+    requirements
+    generate_google_services
+
+    if (!options[:skip_certificates])
+      certificates(options)
+    end
+
+    # after prepare
+    after_ios_prepare(options)
+  end
+
+  lane :build do |options|
+    # prepare generate google services check install
+    prepare(options)
+    path = generate_artifact(options)
+
+    options[:path_artifact] = path
+
+    # after build
+    after_ios_build(options)
+
+    options
+  end
+
+  lane :dev do |options|
+    options[:env] = 'dev'
+    before_ios_dev(options)
+
+    options = build(options)
+
+    after_ios_dev(options)
+  end
+
+  lane :staging do |options|
+    options[:env] = 'staging'
+
+    before_ios_staging(options)
+
+    options = build(options)
+
+    upload_to_testflight(
+      username: ENV['APPLE_USER_CI'],
+      app_identifier: ENV['APP_IDENTIFIER'],
+      skip_submission: true
+    )
+
+    after_ios_staging(options)
+  end
+end
+
+lane :after_ios_prepare do
+  UI.success "hook after_ios_prepare"
+end
+
+lane :after_ios_build do
+  UI.success "hook after_ios_builds"
+end
+
+lane :after_ios_dev do
+  UI.success "hook after_ios_dev"
+end
+
+lane :after_ios_staging do
+  UI.success "hook after_ios_staging"
+end
+
+lane :before_ios_dev do
+  UI.success "hook before_ios_dev"
+end
+
+lane :before_ios_staging do
+  UI.success "hook before_ios_staging"
+end
