@@ -1,7 +1,10 @@
 # import from git dependencies core
 
 platform :ios do
-  override_lane :generate_artifact do |options|
+  lane :requirements do
+  end
+
+  lane :generate_artifact do |options|
     UI.success "generate artifact"
   end
 

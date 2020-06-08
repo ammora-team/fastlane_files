@@ -74,12 +74,6 @@ platform :ios do
     certificate( type: "appstore" )
   end
 
-  lane :requirements do
-  end
-
-  lane :generate_artifact do
-  end
-
   lane :prepare do |options|
     requirements
     generate_google_services
@@ -107,6 +101,7 @@ platform :ios do
 
   lane :dev do |options|
     options[:env] = 'dev'
+
     before_ios_dev(options)
 
     options = build(options)
