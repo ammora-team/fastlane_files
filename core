@@ -44,6 +44,31 @@ platform :ios do
     end
   end
 
+  lane :version do |options|
+    if (options[:version_bump])
+      if (ENV['APP_XCODEPROJ'].empty?)
+        UI.user_error!("'xcodeproj' is required to version")
+      end
+
+      increment_version_number(
+        xcodeproj: ENV['APP_XCODEPROJ'],
+        bump_type: options[:version_bump]
+      )
+    end
+
+    version = ENV['APP_VERSION'] ? ENV['APP_VERSION'] : options[:app_version]
+    if (version)
+      if (ENV['APP_XCODEPROJ'].empty?)
+        UI.user_error!("'xcodeproj' is required to version")
+      end
+
+      increment_version_number(
+        version_number: version,
+        xcodeproj: ENV['APP_XCODEPROJ']
+      )
+    end
+  end
+
   lane :certificate do |options|
     if (ENV.key?('MATCH_TYPE'))
       type = ENV['MATCH_TYPE']
@@ -115,6 +140,8 @@ platform :ios do
 
     before_ios_staging(options)
 
+    version(options)
+
     options = build(options)
 
     username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['APPLE_USER']
@@ -132,6 +159,8 @@ platform :ios do
     options[:env] = 'prod'
 
     before_ios_prod(options)
+
+    version(options)
 
     options = build(options)
 

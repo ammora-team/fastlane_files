@@ -9,7 +9,7 @@ platform :ios do
     configuration = 'Debug'
 
     scheme = options[:scheme] ? options[:scheme] : ENV['APP_SCHEME']
-    workspace = options[:workspace] ? options[:workspace] : ENV['APP_WORKSPACE']
+    workspace = options[:xcworkspace] ? options[:xcworkspace] : ENV['APP_XCWORKSPACE']
 
     if (options[:env] === 'staging' && options[:env] === 'prod')
       export = 'app-store'
