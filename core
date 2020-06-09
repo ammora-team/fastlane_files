@@ -205,10 +205,18 @@ lane :after_ios_staging do
   UI.success "hook after_ios_staging"
 end
 
+lane :after_ios_prod do
+  UI.success "hook after_ios_prod"
+end
+
 lane :before_ios_dev do
   UI.success "hook before_ios_dev"
 end
 
 lane :before_ios_staging do
   UI.success "hook before_ios_staging"
+end
+
+lane :before_ios_prod do
+  UI.success "hook before_ios_prod"
 end
