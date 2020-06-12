@@ -129,7 +129,9 @@ platform :ios do
     prepare(options)
     path = generate_artifact(options)
 
-    options[:path_artifact] = path
+    ENV['ARTIFACT_PATH'] = path
+
+    options[:artifact_path] = path
 
     # after build
     after_ios_build(options)
@@ -138,6 +140,7 @@ platform :ios do
   end
 
   lane :dev do |options|
+    ENV['LANE_ENV'] = 'dev'
     options[:env] = 'dev'
 
     before_ios_dev(options)
@@ -148,6 +151,7 @@ platform :ios do
   end
 
   lane :staging do |options|
+    ENV['LANE_ENV'] = 'staging'
     options[:env] = 'staging'
 
     before_ios_staging(options)
@@ -168,6 +172,7 @@ platform :ios do
   end
 
   lane :prod do |options|
+    ENV['LANE_ENV'] = 'prod'
     options[:env] = 'prod'
 
     before_ios_prod(options)
