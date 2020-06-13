@@ -96,7 +96,7 @@ platform :ios do
       readonly = true
     end
 
-    username = ENV['MATCH_USERNAME'] ? ENV['MATCH_USERNAME'] : ENV['APPLE_USER']
+    username = ENV['MATCH_USERNAME'] ? ENV['MATCH_USERNAME'] : ENV['FASTLANE_USER']
     if (!username.empty?)
       match(
         username: username,
@@ -160,7 +160,7 @@ platform :ios do
 
     options = build(options)
 
-    username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['APPLE_USER']
+    username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['FASTLANE_USER']
 
     upload_to_testflight(
       username: username,
@@ -181,7 +181,7 @@ platform :ios do
 
     options = build(options)
 
-    username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['APPLE_USER']
+    username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['FASTLANE_USER']
 
     upload_to_app_store(
       username: username,
