@@ -128,7 +128,7 @@ platform :ios do
   lane :build do |options|
     # prepare generate google services check install
     prepare(options)
-    build_articaft(options)
+    build_artifact(options)
 
     # after build
     after_ios_build(options)
