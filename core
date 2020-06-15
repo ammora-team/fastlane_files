@@ -128,11 +128,7 @@ platform :ios do
   lane :build do |options|
     # prepare generate google services check install
     prepare(options)
-    path = generate_artifact(options)
-
-    ENV['ARTIFACT_PATH'] = path
-
-    options[:artifact_path] = path
+    build_app(options)
 
     # after build
     after_ios_build(options)

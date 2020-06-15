@@ -4,7 +4,7 @@ platform :ios do
   lane :requirements do
   end
 
-  lane :generate_artifact do |options|
+  lane :build_app do |options|
     export = 'development'
     configuration = 'Debug'
 
