@@ -116,7 +116,8 @@ platform :ios do
     requirements
     generate_google_services
 
-    if (!options[:skip_certificates])
+    skip_certificates = options[:skip_certificates] ? options[:skip_certificates] : ENV['MATCH_SKIP_CERTIFICATES']
+    if (!skip_certificates)
       certificates(options)
     end
 
