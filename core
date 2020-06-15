@@ -142,6 +142,8 @@ platform :ios do
 
     before_ios_dev(options)
 
+    version(options)
+
     options = build(options)
 
     after_ios_dev(options)
