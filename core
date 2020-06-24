@@ -45,35 +45,25 @@ platform :ios do
   end
 
   lane :version do |options|
-    if (options[:version_bump])
-      if (ENV['APP_XCODEPROJ'].empty?)
-        UI.user_error!("'xcodeproj' is required to version")
-      end
+    if (ENV['APP_XCODEPROJ'].empty?)
+      UI.user_error!("'xcodeproj' is required to version")
+    end
 
+    version = options[:version] ? options[:version] : ENV['APP_VERSION']
+    unless version.nil?
+      increment_version_number(
+        xcodeproj: ENV['APP_XCODEPROJ'],
+        version_number: version
+      )
+    elseif options[:version_bump].nil?
       increment_version_number(
         xcodeproj: ENV['APP_XCODEPROJ'],
         bump_type: options[:version_bump]
       )
     end
 
-    version = options[:version] ? options[:version] : ENV['APP_VERSION']
-    if (version)
-      if (ENV['APP_XCODEPROJ'].empty?)
-        UI.user_error!("'xcodeproj' is required to version")
-      end
-
-      increment_version_number(
-        version_number: version,
-        xcodeproj: ENV['APP_XCODEPROJ']
-      )
-    end
-
     build_number = options[:build_number] ? options[:build_number] : ENV[:APP_BUILD_NUMBER]
-    if (build_number)
-      if (ENV['APP_XCODEPROJ'].empty?)
-        UI.user_error!("'xcodeproj' is required to version")
-      end
-
+    unless build_number.nil?
       increment_build_number(
         build_number: build_number,
         xcodeproj: ENV['APP_XCODEPROJ']
