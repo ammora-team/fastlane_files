@@ -1,3 +1,10 @@
+def bitrise_env (var_name, value)
+  envman = `which envman`
+  unless (envman.empty?)
+    sh("envman", "add", "--key", var_name, "--value", value)
+  end
+end
+
 lane :gpg_decrypt do |options|
   file = options[:file]
   extension = file[-4..-1]
@@ -121,6 +128,9 @@ platform :ios do
 
     # after build
     after_ios_build(options)
+
+    # set envs bitrise with envman
+    bitrise_env "BITRISE_IPA_PATH", $IPA_OUTPUT_PATH
 
     options
   end
