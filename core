@@ -62,11 +62,10 @@ platform :ios do
       )
     end
 
-    build_number = options[:build_number] ? options[:build_number] : ENV[:APP_BUILD_NUMBER]
-    unless build_number.nil?
+    unless options[:build_number].nil?
       increment_build_number(
-        build_number: build_number,
-        xcodeproj: ENV['APP_XCODEPROJ']
+        xcodeproj: ENV['APP_XCODEPROJ'],
+        build_number: options[:build_number]
       )
     end
   end
