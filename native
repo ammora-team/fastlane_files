@@ -11,7 +11,7 @@ platform :ios do
     scheme = options[:scheme] ? options[:scheme] : ENV['APP_SCHEME']
     workspace = options[:xcworkspace] ? options[:xcworkspace] : ENV['APP_XCWORKSPACE']
 
-    if (options[:env] === 'staging' && options[:env] === 'prod')
+    if (options[:env] === 'staging' || options[:env] === 'prod')
       export = 'app-store'
       configuration = 'Release'
     end
