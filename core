@@ -130,7 +130,7 @@ platform :ios do
     after_ios_build(options)
 
     # set envs bitrise with envman
-    bitrise_env "BITRISE_IPA_PATH", $IPA_OUTPUT_PATH
+    bitrise_env("BITRISE_IPA_PATH", ENV['IPA_OUTPUT_PATH'])
 
     options
   end
