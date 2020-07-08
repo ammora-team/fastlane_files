@@ -16,13 +16,18 @@ platform :ios do
       configuration = 'Release'
     end
 
+    clean = false
+    if (options[:clean])
+      clean = true
+    end
+
     # build
     build_app(
       scheme: scheme,
       export_method: export,
       configuration: configuration,
       workspace: workspace,
-      clean: true,
+      clean: clean,
       output_directory: './deploy'
     )
   end
