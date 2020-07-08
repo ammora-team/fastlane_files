@@ -23,7 +23,7 @@ platform :ios do
       configuration: configuration,
       workspace: workspace,
       clean: true,
-      output_directory: "./ipas"
+      output_directory: './deploy'
     )
   end
 

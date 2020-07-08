@@ -126,6 +126,8 @@ platform :ios do
     prepare(options)
     build_artifact(options)
 
+    bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
+
     # after build
     after_ios_build(options)
 
