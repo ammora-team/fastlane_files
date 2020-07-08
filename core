@@ -153,7 +153,9 @@ platform :ios do
 
     version(options)
 
-    options = build(options)
+    unless options[:skip_build]
+      options = build(options)
+    endif
 
     username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['FASTLANE_USER']
 
@@ -174,7 +176,9 @@ platform :ios do
 
     version(options)
 
-    options = build(options)
+    unless options[:skip_build]
+      options = build(options)
+    endif
 
     username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['FASTLANE_USER']
 
