@@ -22,7 +22,8 @@ platform :ios do
       export_method: export,
       configuration: configuration,
       workspace: workspace,
-      clean: true
+      clean: true,
+      output_directory: "./ipas"
     )
   end
 
