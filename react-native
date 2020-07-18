@@ -86,14 +86,14 @@ platform :android do
     end
 
     store_password = options[:keystore_store_password] ? options[:keystore_store_password] : ENV['KEYSTORE_STORE_PASSWORD']
-    alias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
+    keystoreAlias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
     password = options[:keystore_password] ? options[:keystore_password] : ENV['KEYSTORE_PASSWORD']
 
     system_properties = {}
-    if (store_password && alias && password)
+    if (store_password && keystoreAlias && password)
         system_properties = {
           'STORE_PASSWORD' => store_password,
-          'ALIAS' => alias,
+          'ALIAS' => keystoreAlias,
           'PASSWORD' => password  
         }
     end
