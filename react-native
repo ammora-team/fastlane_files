@@ -107,8 +107,8 @@ platform :android do
     )
 
     options[:aab] = "./android/app/build/outputs/bundle/release/app-release.aab"
-    
-    # copy folder ./deploy
+  
     options
   end
+
 end
