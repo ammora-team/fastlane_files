@@ -124,7 +124,7 @@ platform :ios do
   lane :build do |options|
     # prepare generate google services check install
     prepare(options)
-    build_artifact(options)
+    options = build_artifact(options)
 
     bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
 
@@ -161,11 +161,13 @@ platform :ios do
 
     username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['FASTLANE_USER']
 
-    upload_to_testflight(
+    defaultOptions = {
       username: username,
       app_identifier: ENV['APP_IDENTIFIER'],
       skip_submission: true
-    )
+    }
+
+    upload_to_testflight(options.merge!(defaultOptions))
 
     after_ios_staging(options)
   end
@@ -184,12 +186,14 @@ platform :ios do
 
     username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['FASTLANE_USER']
 
-    upload_to_app_store(
+    defaultOptions = {
       username: username,
       app_identifier: ENV['APP_IDENTIFIER'],
       skip_metadata: true,
       skip_screenshots: true
-    )
+    }
+
+    upload_to_app_store(options.merge!(defaultOptions))
 
     after_ios_prod(options)
   end
