@@ -110,5 +110,4 @@ platform :android do
   
     options
   end
-
 end
