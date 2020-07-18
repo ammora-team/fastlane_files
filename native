@@ -30,6 +30,8 @@ platform :ios do
       clean: clean,
       output_directory: './deploy'
     )
+
+    options
   end
 
 end
