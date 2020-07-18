@@ -5,10 +5,8 @@ def react_native_path
     return 'react-native'
   end
 
-  Dir.chdir ".." do
-    if File.file?('./node_modules/.bin/react-native')
-      return '../node_modules/.bin/react-native'
-    end
+  if File.file?('./node_modules/.bin/react-native')
+    return '../node_modules/.bin/react-native'
   end
 
 end
