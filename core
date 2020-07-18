@@ -44,6 +44,123 @@ lane :gpg_decrypt do |options|
   output
 end
 
+platform :android do
+   private_lane :generate_json_key do
+    if (ENV.key?('SUPPLY_JSON_KEY'))
+      json_key = gpg_decrypt( file: ENV['SUPPLY_JSON_KEY'], passphrase: ENV['GPG_PASSPHRASE'] )
+    end
+  end
+
+  private_lane :store do |options|
+    json_key = generate_json_key
+    unless json_key
+      UI.user_error!("Generate json_key.")
+    end
+
+    defaultOptions = {
+      package_name: ENV['APP_IDENTIFIER'],
+      track: 'alpha',
+      json_key: json_key,
+      aab: "./android/app/build/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    }
+
+    upload_to_play_store(defaultOptions.merge!(options))
+  end
+
+  lane :generate_jks do
+    if (ENV.key?('KEYSTORE_FILE'))
+      gpg_decrypt( file: ENV['KEYSTORE_FILE'], passphrase: ENV['GPG_PASSPHRASE'] )
+    end
+  end
+
+  lane :generate_google_services do
+    # todo check file exists
+    if (ENV.key?('GOOGLE_SERVICES_JSON'))
+      gpg_decrypt( file: ENV['GOOGLE_SERVICES_JSON'], passphrase: ENV['GPG_PASSPHRASE'] )
+    end
+  end
+
+  lane :version do |options|
+    
+  end
+
+  lane :prepare do |options|
+    requirements
+    generate_google_services
+    generate_jks
+
+    # after prepare
+    after_android_prepare(options)
+  end
+
+  lane :build do |options|
+    # prepare generate google services check install
+    prepare(options)
+    options = build_artifact(options)
+
+    bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
+
+    # after build
+    after_android_build(options)
+
+    options
+  end
+
+  lane :dev do |options|
+    ENV['LANE_ENV'] = 'dev'
+    options[:env] = 'dev'
+
+    before_android_dev(options)
+
+    version(options)
+
+    options = build(options)
+
+    after_android_dev(options)
+  end
+
+  lane :staging do |options|
+    ENV['LANE_ENV'] = 'staging'
+    options[:env] = 'staging'
+
+    before_android_staging(options)
+
+    version(options)
+
+    unless options[:skip_build]
+      options = build(options)
+    end
+
+    store(options)
+
+    after_android_staging(options)
+  end
+
+  lane :prod do |options|
+    ENV['LANE_ENV'] = 'prod'
+    options[:env] = 'prod'
+
+    unless options[:track]
+      options[:track] = 'beta'
+    end
+
+    before_android_prod(options)
+
+    version(options)
+
+    unless options[:skip_build]
+      options = build(options)
+    end
+
+    store(options)
+
+    after_android_prod(options)
+  end
+end
+
 platform :ios do
   lane :generate_google_services do
     if (ENV.key?('GOOGLE_SERVICES_PLIST'))
@@ -167,7 +284,7 @@ platform :ios do
       skip_submission: true
     }
 
-    upload_to_testflight(options.merge!(defaultOptions))
+    upload_to_testflight(defaultOptions.merge!(options))
 
     after_ios_staging(options)
   end
@@ -193,7 +310,7 @@ platform :ios do
       skip_screenshots: true
     }
 
-    upload_to_app_store(options.merge!(defaultOptions))
+    upload_to_app_store(defaultOptions.merge!(options))
 
     after_ios_prod(options)
   end
@@ -228,5 +345,37 @@ lane :before_ios_staging do
 end
 
 lane :before_ios_prod do
+  UI.success "hook before_ios_prod"
+end
+
+lane :after_android_prepare do
+  UI.success "hook after_ios_prepare"
+end
+
+lane :after_android_build do
+  UI.success "hook after_ios_builds"
+end
+
+lane :after_android_dev do
+  UI.success "hook after_ios_dev"
+end
+
+lane :after_android_staging do
+  UI.success "hook after_ios_staging"
+end
+
+lane :after_android_prod do
+  UI.success "hook after_ios_prod"
+end
+
+lane :before_android_dev do
+  UI.success "hook before_ios_dev"
+end
+
+lane :before_android_staging do
+  UI.success "hook before_ios_staging"
+end
+
+lane :before_android_prod do
   UI.success "hook before_ios_prod"
 end
