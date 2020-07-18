@@ -1,0 +1,113 @@
+def react_native_path
+  gpg_cmd = `which react-native`
+
+  unless gpg_cmd.empty?
+    return 'react-native'
+  end
+
+  Dir.chdir ".." do
+    if File.file?('./node_modules/.bin/react-native')
+      return '../node_modules/.bin/react-native'
+    end
+  end
+
+end
+
+lane :requirements do
+  is_install = react_native_path
+
+  if (is_install.empty?)
+    UI.user_error!("'react-native' not installed")
+  else
+end
+
+platform :ios do
+  lane :build_artifact do |options|
+    export = 'development'
+    configuration = 'Debug'
+
+    scheme = options[:scheme] ? options[:scheme] : ENV['APP_SCHEME']
+    workspace = options[:xcworkspace] ? options[:xcworkspace] : ENV['APP_XCWORKSPACE']
+
+    if (options[:env] === 'staging' || options[:env] === 'prod')
+      export = 'app-store'
+      configuration = 'Release'
+    end
+
+    clean = false
+    if (options[:clean])
+      clean = true
+    end
+
+    # build
+    build_app(
+      scheme: scheme,
+      export_method: export,
+      configuration: configuration,
+      workspace: workspace,
+      clean: clean,
+      output_directory: './deploy'
+    )
+
+    options
+  end
+
+end
+
+platform :android do
+  lane :build_artifact do |options|
+    build_type = 'Debug'
+    task = 'assemble'
+    if (options[:env] === 'staging' || options[:env] === 'prod')
+      build_type = 'Release'
+      task = 'bundle'
+    end
+
+    if (build_type == 'Debug')
+      Dir.chdir ".." do
+        sh(
+          react_native_path(),
+          "bundle",
+          "--platform",
+          "android",
+          "--dev",
+          "false",
+          "--entry-file",
+          "index.js",
+          "--bundle-output",
+          "android/app/src/main/assets/index.android.bundle",
+          "--verbose"
+        )
+      end
+    end
+
+    if (options[:clean])
+      gradle(task: 'clean', project_dir: 'android/')
+    end
+
+    store_password = options[:keystore_store_password] ? options[:keystore_store_password] : ENV['KEYSTORE_STORE_PASSWORD']
+    keystoreAlias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
+    password = options[:keystore_password] ? options[:keystore_password] : ENV['KEYSTORE_PASSWORD']
+
+    system_properties = {}
+    if (store_password and keystoreAlias and password)
+      system_properties = {
+        'STORE_PASSWORD' => store_password,
+        'ALIAS' => keystoreAlias,
+        'PASSWORD' => password  
+      }
+    end
+
+    gradle(
+      task: task,
+      build_type: build_type,
+      project_dir: 'android/',
+      properties: options[:properties],
+      system_properties: system_properties
+    )
+
+    options[:aab] = "./android/app/build/outputs/bundle/release/app-release.aab"
+  
+    options
+  end
+end
