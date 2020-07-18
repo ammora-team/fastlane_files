@@ -61,7 +61,6 @@ platform :android do
       package_name: ENV['APP_IDENTIFIER'],
       track: 'alpha',
       json_key: json_key,
-      aab: "./android/app/build/outputs/bundle/release/app-release.aab",
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true
@@ -84,7 +83,20 @@ platform :android do
   end
 
   lane :version do |options|
+    properties = {}
+
+    version = options[:version] ? options[:version] : ENV['APP_VERSION']
+    unless version.nil?
+      properties[:versionName] = options[:version]
+    end
+
+    unless options[:build_number].nil?
+      properties[:versionCode] = options[:build_number]
+    end
+
+    options[:properties] = properties
     
+    options
   end
 
   lane :prepare do |options|
@@ -115,7 +127,7 @@ platform :android do
 
     before_android_dev(options)
 
-    version(options)
+    options = version(options)
 
     options = build(options)
 
