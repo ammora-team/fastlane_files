@@ -36,12 +36,100 @@ lane :gpg_decrypt do |options|
     UI.user_error!("'gpg' command not found")
   else
     Dir.chdir ".." do
-      sh("gpg",  "--batch", "--yes", "--passphrase", passphrase , "--output", output, "--decrypt", file, log: false)
+      sh("gpg",  "--batch", "--yes", "--passphrase", passphrase, "--output", output, "--decrypt", file, log: false)
     end
     UI.success "GPG Decrypt OK"
   end
 
   output
+end
+
+lane :build_gradle do |options|
+  build_type = 'Debug'
+  task = 'assemble'
+  is_bundle = false
+  if (options[:env] === 'staging' || options[:env] === 'prod')
+    build_type = 'Release'
+    task = 'bundle'
+    is_bundle = true
+    if (options[:build_apk])
+      task = 'assemble'
+      is_bundle = false
+    end
+  end
+
+  file = options[:keystore_file] ? options[:keystore_file] : ENV['KEYSTORE_FILE']
+  password = options[:keystore_password] ? options[:keystore_password] : ENV['KEYSTORE_PASSWORD']
+  keystore_alias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
+  passphrase = options[:passphrase] ? options[:passphrase] : ENV['KEYSTORE_PASSPHRARE']
+
+  system_properties = {}
+  if (password and keystore_alias and passphrase)
+    system_properties = {
+      'KEYSTORE_FILE' =>  file,
+      'KEYSTORE_PASSWORD' => password,
+      'KEYSTORE_ALIAS' => keystore_alias,
+      'KEYSTORE_PASSPHRARE' => passphrase
+    }
+  end
+
+  if (options[:clean])
+    gradle(task: 'clean', project_dir: 'android/')
+  end
+
+  gradle(
+    task: task,
+    build_type: build_type,
+    project_dir: options[:project_dir] ? options[:project_dir] : 'android/',
+    properties: options[:properties],
+    system_properties: system_properties
+  )
+
+  path_build_type = build_type.downcase
+  if (is_bundle)
+    file = "./android/app/build/outputs/bundle/#{path_build_type}/app-#{path_build_type}.aab"
+    options[:aab] = file
+  else
+    file = "./android/app/build/outputs/apk/#{path_build_type}/app-#{path_build_type}.apk"
+    options[:apk] = file
+  end
+
+  Dir.chdir ".." do
+    FileUtils.mkdir_p './deploy'
+    FileUtils.cp(file, "./deploy")
+  end
+
+  options
+end
+
+lane :build_xcode do |options|
+  export = 'development'
+  configuration = 'Debug'
+
+  scheme = options[:scheme] ? options[:scheme] : ENV['APP_SCHEME']
+  workspace = options[:xcworkspace] ? options[:xcworkspace] : ENV['APP_XCWORKSPACE']
+
+  if (options[:env] === 'staging' || options[:env] === 'prod')
+    export = 'app-store'
+    configuration = 'Release'
+  end
+
+  clean = false
+  if (options[:clean])
+    clean = true
+  end
+
+  # build
+  build_app(
+    scheme: scheme,
+    export_method: export,
+    configuration: configuration,
+    workspace: workspace,
+    clean: clean,
+    output_directory: './deploy'
+  )
+
+  options
 end
 
 platform :android do

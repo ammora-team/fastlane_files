@@ -5,33 +5,7 @@ platform :ios do
   end
 
   lane :build_artifact do |options|
-    export = 'development'
-    configuration = 'Debug'
-
-    scheme = options[:scheme] ? options[:scheme] : ENV['APP_SCHEME']
-    workspace = options[:xcworkspace] ? options[:xcworkspace] : ENV['APP_XCWORKSPACE']
-
-    if (options[:env] === 'staging' || options[:env] === 'prod')
-      export = 'app-store'
-      configuration = 'Release'
-    end
-
-    clean = false
-    if (options[:clean])
-      clean = true
-    end
-
-    # build
-    build_app(
-      scheme: scheme,
-      export_method: export,
-      configuration: configuration,
-      workspace: workspace,
-      clean: clean,
-      output_directory: './deploy'
-    )
-
-    options
+    build_xcode(options)
   end
 
 end
