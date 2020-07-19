@@ -7,7 +7,7 @@ def react_native_path
 
   Dir.chdir ".." do
     if File.file?('./node_modules/.bin/react-native')
-      return '../node_modules/.bin/react-native'
+      return './node_modules/.bin/react-native'
     end
   end
 
@@ -67,6 +67,24 @@ platform :android do
       if (options[:build_apk])
         task = 'assemble'
         is_bundle = false
+      end
+    end
+
+    if (build_type == 'Debug')
+      Dir.chdir ".." do
+        sh(
+          react_native_path(),
+          "bundle",
+          "--platform",
+          "android",
+          "--dev",
+          "false",
+          "--entry-file",
+          "index.js",
+          "--bundle-output",
+          "android/app/src/main/assets/index.android.bundle",
+          "--verbose"
+        )
       end
     end
 
