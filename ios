@@ -1,0 +1,220 @@
+platform :ios do
+  lane :generate_google_services do
+    if (ENV.key?('GOOGLE_SERVICES_PLIST'))
+      gpg_decrypt( file: ENV['GOOGLE_SERVICES_PLIST'], passphrase: ENV['GPG_PASSPHRASE'] )
+    end
+  end
+
+  lane :xcode_artifact do |options|
+    export = 'development'
+    configuration = 'Debug'
+
+    scheme = options[:scheme] ? options[:scheme] : ENV['APP_SCHEME']
+    workspace = options[:xcworkspace] ? options[:xcworkspace] : ENV['APP_XCWORKSPACE']
+
+    if (options[:env] === 'staging' || options[:env] === 'prod')
+      export = 'app-store'
+      configuration = 'Release'
+    end
+
+    clean = false
+    if (options[:clean])
+      clean = true
+    end
+
+    # build
+    build_app(
+      scheme: scheme,
+      export_method: export,
+      configuration: configuration,
+      workspace: workspace,
+      clean: clean,
+      output_directory: './deploy'
+    )
+
+    options
+  end
+
+  lane :version do |options|
+    if (ENV['APP_XCODEPROJ'].empty?)
+      UI.user_error!("'xcodeproj' is required to version")
+    end
+
+    version = options[:version] ? options[:version] : ENV['APP_VERSION']
+    unless version.nil?
+      increment_version_number(
+        xcodeproj: ENV['APP_XCODEPROJ'],
+        version_number: version
+      )
+    elseif options[:version_bump].nil?
+      increment_version_number(
+        xcodeproj: ENV['APP_XCODEPROJ'],
+        bump_type: options[:version_bump]
+      )
+    end
+
+    unless options[:build_number].nil?
+      increment_build_number(
+        xcodeproj: ENV['APP_XCODEPROJ'],
+        build_number: options[:build_number]
+      )
+    end
+  end
+
+  lane :certificate do |options|
+    if (ENV.key?('MATCH_TYPE'))
+      type = ENV['MATCH_TYPE']
+    end
+
+    if (options[:type])
+      type = options[:type]
+    end
+
+    readonly = ENV['MATCH_READONLY']
+    password = ENV['FASTLANE_PASSWORD']
+    if (readonly.nil? && (password.nil? || password.empty?))
+      readonly = true
+    end
+
+    username = ENV['MATCH_USERNAME'] ? ENV['MATCH_USERNAME'] : ENV['FASTLANE_USER']
+    if (!username.empty?)
+      match(
+        username: username,
+        app_identifier: ENV['APP_IDENTIFIER'],
+        readonly: readonly,
+        type: type
+      )
+    end
+  end
+
+  lane :certificates do
+    certificate( type: "development" )
+    certificate( type: "appstore" )
+  end
+
+  lane :prepare do |options|
+    requirements
+    generate_google_services
+
+    skip_certificates = options[:skip_certificates] ? options[:skip_certificates] : ENV['MATCH_SKIP_CERTIFICATES']
+    if (!skip_certificates)
+      certificates(options)
+    end
+
+    # after prepare
+    after_ios_prepare(options)
+  end
+
+  lane :build do |options|
+    # prepare generate google services check install
+    prepare(options)
+    options = build_artifact(options)
+
+    bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
+
+    # after build
+    after_ios_build(options)
+
+    options
+  end
+
+  lane :build_artifact do |options|
+    options = xcode_artifact(options)
+  end
+
+  lane :dev do |options|
+    ENV['LANE_ENV'] = 'dev'
+    options[:env] = 'dev'
+
+    before_ios_dev(options)
+
+    version(options)
+
+    options = build(options)
+
+    after_ios_dev(options)
+  end
+
+  lane :staging do |options|
+    ENV['LANE_ENV'] = 'staging'
+    options[:env] = 'staging'
+
+    before_ios_staging(options)
+
+    version(options)
+
+    unless options[:skip_build]
+      options = build(options)
+    end
+
+    username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['FASTLANE_USER']
+
+    defaultOptions = {
+      username: username,
+      app_identifier: ENV['APP_IDENTIFIER'],
+      skip_submission: true
+    }
+
+    upload_to_testflight(defaultOptions.merge!(options))
+
+    after_ios_staging(options)
+  end
+
+  lane :prod do |options|
+    ENV['LANE_ENV'] = 'prod'
+    options[:env] = 'prod'
+
+    before_ios_prod(options)
+
+    version(options)
+
+    unless options[:skip_build]
+      options = build(options)
+    end
+
+    username = ENV['DELIVER_USER'] ? ENV['DELIVER_USER'] : ENV['FASTLANE_USER']
+
+    defaultOptions = {
+      username: username,
+      app_identifier: ENV['APP_IDENTIFIER'],
+      skip_metadata: true,
+      skip_screenshots: true
+    }
+
+    upload_to_app_store(defaultOptions.merge!(options))
+
+    after_ios_prod(options)
+  end
+end
+
+lane :after_ios_prepare do
+  UI.success "hook after_ios_prepare"
+end
+
+lane :after_ios_build do
+  UI.success "hook after_ios_builds"
+end
+
+lane :after_ios_dev do
+  UI.success "hook after_ios_dev"
+end
+
+lane :after_ios_staging do
+  UI.success "hook after_ios_staging"
+end
+
+lane :after_ios_prod do
+  UI.success "hook after_ios_prod"
+end
+
+lane :before_ios_dev do
+  UI.success "hook before_ios_dev"
+end
+
+lane :before_ios_staging do
+  UI.success "hook before_ios_staging"
+end
+
+lane :before_ios_prod do
+  UI.success "hook before_ios_prod"
+end
