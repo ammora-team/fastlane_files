@@ -128,7 +128,8 @@ platform :android do
   lane :build do |options|
     # prepare generate google services check install
     prepare(options)
-    options = android_archive(options)
+
+    options = "android_archive".send(options)
 
     bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
 

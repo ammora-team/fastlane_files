@@ -46,5 +46,3 @@ def requirements (options)
     UI.user_error!("'react-native' not installed")
   end
 end
-
-alias_method :android_archive, :android_archive_react
