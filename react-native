@@ -49,6 +49,6 @@ platform :android do
       end
     end
 
-    options = build_gradle(options)
+    options = gradle_artifact(options)
   end
 end
