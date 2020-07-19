@@ -64,23 +64,6 @@ platform :android do
       task = 'bundle'
     end
 
-    if (build_type == 'Debug')
-      path = react_native_path
-      sh(
-        path,
-        "bundle",
-        "--platform",
-        "android",
-        "--dev",
-        "false",
-        "--entry-file",
-        "index.js",
-        "--bundle-output",
-        "android/app/src/main/assets/index.android.bundle",
-        "--verbose"
-      )
-    end
-
     if (options[:clean])
       gradle(task: 'clean', project_dir: 'android/')
     end
