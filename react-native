@@ -71,9 +71,10 @@ platform :android do
     end
 
     if (build_type == 'Debug')
+      cmd_react_native = react_native_path()
       Dir.chdir ".." do
         sh(
-          react_native_path(),
+          cmd_react_native,
           "bundle",
           "--platform",
           "android",
