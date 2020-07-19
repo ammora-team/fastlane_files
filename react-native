@@ -96,10 +96,15 @@ platform :android do
     )
 
     if (is_bundle)
-      options[:aab] = "./android/app/build/outputs/bundle/release/app-release.aab"
+      file = "./android/app/build/outputs/bundle/release/app-release.aab"
+      options[:aab] = file
     else
-      options[:apk] = "./android/app/build/outputs/bundle/release/app-release.apk"
+      file = "./android/app/build/outputs/bundle/release/app-release.apk"
+      options[:apk] = file
     end
+
+    FileUtils.cp(file, "./deploy")
+
     options
   end
 end
