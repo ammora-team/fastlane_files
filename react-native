@@ -17,8 +17,6 @@ end
 lane :requirements do
   is_install = react_native_path
 
-  UI.user_error!(is_install)
-
   if (is_install == '')
     UI.user_error!("'react-native' not installed")
   end
