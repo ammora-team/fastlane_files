@@ -117,7 +117,7 @@ platform :android do
   end
 
   lane :prepare do |options|
-    requirements
+    requirements(options)
     generate_google_services
     options[:keystore_file] = generate_jks
 

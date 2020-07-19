@@ -5,6 +5,10 @@ def bitrise_env (var_name, value)
   end
 end
 
+def requirements (options)
+  UI.success "check requirements"
+end
+
 lane :gpg_decrypt do |options|
   file = options[:file]
   extension = file[-4..-1]

@@ -37,7 +37,7 @@ def android_archive (options)
   return gradle_archive(options)
 end
 
-lane :requirements do
+def requirements (options)
   is_install = react_native_path
 
   if (is_install == '')

@@ -97,7 +97,7 @@ platform :ios do
   end
 
   lane :prepare do |options|
-    requirements
+    requirements(options)
     generate_google_services
 
     skip_certificates = options[:skip_certificates] ? options[:skip_certificates] : ENV['MATCH_SKIP_CERTIFICATES']
