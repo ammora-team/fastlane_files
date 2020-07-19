@@ -112,7 +112,12 @@ platform :ios do
   lane :build do |options|
     # prepare generate google services check install
     prepare(options)
-    options = ios_archive(options)
+
+    begin
+        options = ios_archive_override(options)
+    rescue
+        options = ios_archive(options)
+    end
 
     bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
 
