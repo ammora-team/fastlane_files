@@ -97,6 +97,8 @@ platform :ios do
   end
 
   lane :prepare do |options|
+    before_ios_prepare(options)
+
     requirements(options)
     generate_google_services
 
@@ -190,6 +192,10 @@ platform :ios do
 
     after_ios_prod(options)
   end
+end
+
+lane :before_ios_prepare do
+  UI.success "hook before_ios_prepare"
 end
 
 lane :after_ios_prepare do
