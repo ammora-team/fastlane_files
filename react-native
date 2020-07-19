@@ -99,7 +99,7 @@ platform :android do
     passphrase = options[:passphrase] ? options[:passphrase] : ENV['KEYSTORE_PASSPHRARE']
 
     system_properties = {}
-    if (store_password and keystoreAlias and password)
+    if (password and keystore_alias and passphrase)
       system_properties = {
         'KEYSTORE_FILE' =>  file,
         'KEYSTORE_PASSWORD' => password,
