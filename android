@@ -1,3 +1,64 @@
+def android_archive (options)
+  return gradle_archive(options)
+end
+
+def gradle_archive (options)
+  build_type = 'Debug'
+  task = 'assemble'
+  is_bundle = false
+  if (options[:env] === 'staging' || options[:env] === 'prod')
+    build_type = 'Release'
+    task = 'bundle'
+    is_bundle = true
+    if (options[:build_apk])
+      task = 'assemble'
+      is_bundle = false
+    end
+  end
+
+  file = options[:keystore_file] ? options[:keystore_file] : ENV['KEYSTORE_FILE']
+  password = options[:keystore_password] ? options[:keystore_password] : ENV['KEYSTORE_PASSWORD']
+  keystore_alias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
+  passphrase = options[:passphrase] ? options[:passphrase] : ENV['KEYSTORE_PASSPHRARE']
+
+  system_properties = {}
+  if (password and keystore_alias and passphrase)
+    system_properties = {
+      'KEYSTORE_FILE' =>  file,
+      'KEYSTORE_PASSWORD' => password,
+      'KEYSTORE_ALIAS' => keystore_alias,
+      'KEYSTORE_PASSPHRARE' => passphrase
+    }
+  end
+
+  if (options[:clean])
+    gradle(task: 'clean', project_dir: 'android/')
+  end
+
+  gradle(
+    task: task,
+    build_type: build_type,
+    project_dir: options[:project_dir] ? options[:project_dir] : 'android/',
+    properties: options[:properties],
+    system_properties: system_properties
+  )
+
+  path_build_type = build_type.downcase
+  if (is_bundle)
+    file = "./android/app/build/outputs/bundle/#{path_build_type}/app-#{path_build_type}.aab"
+    options[:aab] = file
+  else
+    file = "./android/app/build/outputs/apk/#{path_build_type}/app-#{path_build_type}.apk"
+    options[:apk] = file
+  end
+
+  Dir.chdir ".." do
+    FileUtils.mkdir_p './deploy'
+    FileUtils.cp(file, "./deploy")
+  end
+
+  return options
+end
 
 platform :android do
    private_lane :generate_json_key do
@@ -55,64 +116,6 @@ platform :android do
     options
   end
 
-  lane :gradle_artifact do |options|
-    build_type = 'Debug'
-    task = 'assemble'
-    is_bundle = false
-    if (options[:env] === 'staging' || options[:env] === 'prod')
-      build_type = 'Release'
-      task = 'bundle'
-      is_bundle = true
-      if (options[:build_apk])
-        task = 'assemble'
-        is_bundle = false
-      end
-    end
-
-    file = options[:keystore_file] ? options[:keystore_file] : ENV['KEYSTORE_FILE']
-    password = options[:keystore_password] ? options[:keystore_password] : ENV['KEYSTORE_PASSWORD']
-    keystore_alias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
-    passphrase = options[:passphrase] ? options[:passphrase] : ENV['KEYSTORE_PASSPHRARE']
-
-    system_properties = {}
-    if (password and keystore_alias and passphrase)
-      system_properties = {
-        'KEYSTORE_FILE' =>  file,
-        'KEYSTORE_PASSWORD' => password,
-        'KEYSTORE_ALIAS' => keystore_alias,
-        'KEYSTORE_PASSPHRARE' => passphrase
-      }
-    end
-
-    if (options[:clean])
-      gradle(task: 'clean', project_dir: 'android/')
-    end
-
-    gradle(
-      task: task,
-      build_type: build_type,
-      project_dir: options[:project_dir] ? options[:project_dir] : 'android/',
-      properties: options[:properties],
-      system_properties: system_properties
-    )
-
-    path_build_type = build_type.downcase
-    if (is_bundle)
-      file = "./android/app/build/outputs/bundle/#{path_build_type}/app-#{path_build_type}.aab"
-      options[:aab] = file
-    else
-      file = "./android/app/build/outputs/apk/#{path_build_type}/app-#{path_build_type}.apk"
-      options[:apk] = file
-    end
-
-    Dir.chdir ".." do
-      FileUtils.mkdir_p './deploy'
-      FileUtils.cp(file, "./deploy")
-    end
-
-    options
-  end
-
   lane :prepare do |options|
     requirements
     generate_google_services
@@ -125,7 +128,7 @@ platform :android do
   lane :build do |options|
     # prepare generate google services check install
     prepare(options)
-    options = build_artifact(options)
+    options = android_archive(options)
 
     bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
 
@@ -133,10 +136,6 @@ platform :android do
     after_android_build(options)
 
     options
-  end
-
-  lane :build_artifact do |options|
-    options = gradle_artifact(options)
   end
 
   lane :dev do |options|
