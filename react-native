@@ -23,7 +23,7 @@ def requirements (options)
 end
 
 platform :android do
-  lane :android_archive_override (options)
+  lane :android_archive_override do |options|
     UI.success "Android Archive react-native"
 
     if (options[:env] != 'staging' && options[:env] != 'prod')
