@@ -14,35 +14,37 @@ def react_native_path
   return ''
 end
 
-def android_archive_react (options)
-  UI.success "Android Archive react-native"
-
-  if (options[:env] != 'staging' && options[:env] != 'prod')
-    cmd_react_native = react_native_path()
-    Dir.chdir ".." do
-      sh(
-        cmd_react_native,
-        "bundle",
-        "--platform",
-        "android",
-        "--dev",
-        "false",
-        "--entry-file",
-        "index.js",
-        "--bundle-output",
-        "android/app/src/main/assets/index.android.bundle",
-        "--verbose"
-      )
-    end
-  end
-
-  return gradle_archive(options)
-end
-
 def requirements (options)
   is_install = react_native_path
 
   if (is_install == '')
     UI.user_error!("'react-native' not installed")
+  end
+end
+
+platform :android do
+  lane :android_archive_override (options)
+    UI.success "Android Archive react-native"
+
+    if (options[:env] != 'staging' && options[:env] != 'prod')
+      cmd_react_native = react_native_path()
+      Dir.chdir ".." do
+        sh(
+          cmd_react_native,
+          "bundle",
+          "--platform",
+          "android",
+          "--dev",
+          "false",
+          "--entry-file",
+          "index.js",
+          "--bundle-output",
+          "android/app/src/main/assets/index.android.bundle",
+          "--verbose"
+        )
+      end
+    end
+
+    return gradle_archive(options)
   end
 end

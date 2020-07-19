@@ -1,7 +1,3 @@
-def android_archive (options)
-  return gradle_archive(options)
-end
-
 def gradle_archive (options)
   build_type = 'Debug'
   task = 'assemble'
@@ -85,6 +81,10 @@ platform :android do
     upload_to_play_store(defaultOptions.merge!(options))
   end
 
+  lane :android_archive do |options|
+    return gradle_archive(options)
+  end
+
   lane :generate_jks do
     output = ''
     if (ENV.key?('KEYSTORE_FILE'))
@@ -129,7 +129,11 @@ platform :android do
     # prepare generate google services check install
     prepare(options)
 
-    options = "android_archive".send(options)
+    begin
+        options = android_archive_override(options)
+    rescue
+        options = android_archive(options)
+    end
 
     bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
 
