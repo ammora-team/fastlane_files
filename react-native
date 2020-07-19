@@ -5,10 +5,13 @@ def react_native_path
     return 'react-native'
   end
 
-  if File.file?('./node_modules/.bin/react-native')
-    return '../node_modules/.bin/react-native'
+  Dir.chdir ".." do
+    if File.file?('./node_modules/.bin/react-native')
+      return '../node_modules/.bin/react-native'
+    end
   end
 
+  return ''
 end
 
 lane :requirements do
@@ -16,7 +19,7 @@ lane :requirements do
 
   UI.user_error!(is_install)
 
-  if (is_install.empty?)
+  if (is_install == '')
     UI.user_error!("'react-native' not installed")
   end
 end
@@ -64,21 +67,20 @@ platform :android do
     end
 
     if (build_type == 'Debug')
-      Dir.chdir ".." do
-        sh(
-          react_native_path(),
-          "bundle",
-          "--platform",
-          "android",
-          "--dev",
-          "false",
-          "--entry-file",
-          "index.js",
-          "--bundle-output",
-          "android/app/src/main/assets/index.android.bundle",
-          "--verbose"
-        )
-      end
+      path = react_native_path
+      sh(
+        path,
+        "bundle",
+        "--platform",
+        "android",
+        "--dev",
+        "false",
+        "--entry-file",
+        "index.js",
+        "--bundle-output",
+        "android/app/src/main/assets/index.android.bundle",
+        "--verbose"
+      )
     end
 
     if (options[:clean])
