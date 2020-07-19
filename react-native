@@ -14,7 +14,7 @@ def react_native_path
   return ''
 end
 
-lane :android_archive do |options|
+def android_archive_react (options)
   UI.success "Android Archive react-native"
 
   if (options[:env] != 'staging' && options[:env] != 'prod')
@@ -46,3 +46,5 @@ def requirements (options)
     UI.user_error!("'react-native' not installed")
   end
 end
+
+alias_method :android_archive, :android_archive_react
