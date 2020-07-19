@@ -70,8 +70,9 @@ platform :android do
   end
 
   lane :generate_jks do
+    output = ''
     if (ENV.key?('KEYSTORE_FILE'))
-      gpg_decrypt( file: ENV['KEYSTORE_FILE'], passphrase: ENV['GPG_PASSPHRASE'] )
+      output = gpg_decrypt( file: ENV['KEYSTORE_FILE'], passphrase: ENV['GPG_PASSPHRASE'] )
     end
   end
 
@@ -102,7 +103,7 @@ platform :android do
   lane :prepare do |options|
     requirements
     generate_google_services
-    generate_jks
+    options[:keystore_file] = generate_jks
 
     # after prepare
     after_android_prepare(options)

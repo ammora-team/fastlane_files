@@ -93,16 +93,18 @@ platform :android do
       gradle(task: 'clean', project_dir: 'android/')
     end
 
-    store_password = options[:keystore_store_password] ? options[:keystore_store_password] : ENV['KEYSTORE_STORE_PASSWORD']
-    keystoreAlias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
+    file = options[:keystore_file] ? options[:keystore_file] : ENV['KEYSTORE_FILE']
     password = options[:keystore_password] ? options[:keystore_password] : ENV['KEYSTORE_PASSWORD']
+    keystore_alias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
+    passphrase = options[:passphrase] ? options[:passphrase] : ENV['KEYSTORE_PASSPHRARE']
 
     system_properties = {}
     if (store_password and keystoreAlias and password)
       system_properties = {
-        'STORE_PASSWORD' => store_password,
-        'ALIAS' => keystoreAlias,
-        'PASSWORD' => password
+        'KEYSTORE_FILE' =>  file,
+        'KEYSTORE_PASSWORD' => password,
+        'KEYSTORE_ALIAS' => keystore_alias,
+        'KEYSTORE_PASSPHRARE' => passphrase
       }
     end
 
