@@ -104,7 +104,9 @@ platform :android do
       options[:apk] = file
     end
 
-    FileUtils.cp(file, "./deploy")
+    Dir.chdir ".." do
+      FileUtils.cp(file, "./deploy")
+    end
 
     options
   end
