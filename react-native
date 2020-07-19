@@ -95,11 +95,12 @@ platform :android do
       system_properties: system_properties
     )
 
+    path_build_type = build_type.downcase
     if (is_bundle)
-      file = "./android/app/build/outputs/bundle/release/app-release.aab"
+      file = "./android/app/build/outputs/bundle/#{path_build_type}/app-#{path_build_type}.aab"
       options[:aab] = file
     else
-      file = "./android/app/build/outputs/bundle/release/app-release.apk"
+      file = "./android/app/build/outputs/apk/#{path_build_type}/app-#{path_build_type}.apk"
       options[:apk] = file
     end
 
