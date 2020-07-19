@@ -59,9 +59,15 @@ platform :android do
   lane :build_artifact do |options|
     build_type = 'Debug'
     task = 'assemble'
+    is_bundle = false
     if (options[:env] === 'staging' || options[:env] === 'prod')
       build_type = 'Release'
       task = 'bundle'
+      is_bundle = true
+      if (options[:build_apk])
+        task = 'assemble'
+        is_bundle = false
+      end
     end
 
     if (options[:clean])
@@ -89,8 +95,11 @@ platform :android do
       system_properties: system_properties
     )
 
-    options[:aab] = "./android/app/build/outputs/bundle/release/app-release.aab"
-
+    if (is_bundle)
+      options[:aab] = "./android/app/build/outputs/bundle/release/app-release.aab"
+    else
+      options[:apk] = "./android/app/build/outputs/bundle/release/app-release.apk"
+    end
     options
   end
 end
