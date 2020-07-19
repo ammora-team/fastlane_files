@@ -14,7 +14,7 @@ def react_native_path
   return ''
 end
 
-def android_archive (options)
+lane :android_archive do |options|
   UI.success "Android Archive react-native"
 
   if (options[:env] != 'staging' && options[:env] != 'prod')
