@@ -191,33 +191,33 @@ platform :android do
 end
 
 lane :after_android_prepare do
-  UI.success "hook after_ios_prepare"
+  UI.success "hook after_android_prepare"
 end
 
 lane :after_android_build do
-  UI.success "hook after_ios_builds"
+  UI.success "hook after_android_builds"
 end
 
 lane :after_android_dev do
-  UI.success "hook after_ios_dev"
+  UI.success "hook after_android_dev"
 end
 
 lane :after_android_staging do
-  UI.success "hook after_ios_staging"
+  UI.success "hook after_android_staging"
 end
 
 lane :after_android_prod do
-  UI.success "hook after_ios_prod"
+  UI.success "hook after_android_prod"
 end
 
 lane :before_android_dev do
-  UI.success "hook before_ios_dev"
+  UI.success "hook before_android_dev"
 end
 
 lane :before_android_staging do
-  UI.success "hook before_ios_staging"
+  UI.success "hook before_android_staging"
 end
 
 lane :before_android_prod do
-  UI.success "hook before_ios_prod"
+  UI.success "hook before_android_prod"
 end

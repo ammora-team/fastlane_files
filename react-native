@@ -15,6 +15,8 @@ def react_native_path
 end
 
 def android_archive (options)
+  UI.success "Android Archive react-native"
+
   if (options[:env] != 'staging' && options[:env] != 'prod')
     cmd_react_native = react_native_path()
     Dir.chdir ".." do
