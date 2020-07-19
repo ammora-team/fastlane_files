@@ -82,7 +82,7 @@ platform :android do
   end
 
   lane :android_archive do |options|
-    return gradle_archive(options)
+    gradle_archive(options)
   end
 
   lane :generate_jks do

@@ -45,6 +45,6 @@ platform :android do
       end
     end
 
-    return gradle_archive(options)
+    gradle_archive(options)
   end
 end
