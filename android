@@ -197,38 +197,38 @@ platform :android do
   end
 end
 
-lane :before_android_prepare do
+lane :before_android_prepare do |options|
   UI.success "hook before_android_prepare"
 end
 
-lane :after_android_prepare do
+lane :after_android_prepare do |options|
   UI.success "hook after_android_prepare"
 end
 
-lane :after_android_build do
+lane :after_android_build do |options|
   UI.success "hook after_android_builds"
 end
 
-lane :after_android_dev do
+lane :after_android_dev do |options|
   UI.success "hook after_android_dev"
 end
 
-lane :after_android_staging do
+lane :after_android_staging do |options|
   UI.success "hook after_android_staging"
 end
 
-lane :after_android_prod do
+lane :after_android_prod do |options|
   UI.success "hook after_android_prod"
 end
 
-lane :before_android_dev do
+lane :before_android_dev do |options|
   UI.success "hook before_android_dev"
 end
 
-lane :before_android_staging do
+lane :before_android_staging do |options|
   UI.success "hook before_android_staging"
 end
 
-lane :before_android_prod do
+lane :before_android_prod do |options|
   UI.success "hook before_android_prod"
 end

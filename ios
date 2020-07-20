@@ -194,38 +194,38 @@ platform :ios do
   end
 end
 
-lane :before_ios_prepare do
+lane :before_ios_prepare do |options|
   UI.success "hook before_ios_prepare"
 end
 
-lane :after_ios_prepare do
+lane :after_ios_prepare do |options|
   UI.success "hook after_ios_prepare"
 end
 
-lane :after_ios_build do
+lane :after_ios_build do |options|
   UI.success "hook after_ios_builds"
 end
 
-lane :after_ios_dev do
+lane :after_ios_dev do |options|
   UI.success "hook after_ios_dev"
 end
 
-lane :after_ios_staging do
+lane :after_ios_staging do |options|
   UI.success "hook after_ios_staging"
 end
 
-lane :after_ios_prod do
+lane :after_ios_prod do |options|
   UI.success "hook after_ios_prod"
 end
 
-lane :before_ios_dev do
+lane :before_ios_dev do |options|
   UI.success "hook before_ios_dev"
 end
 
-lane :before_ios_staging do
+lane :before_ios_staging do |options|
   UI.success "hook before_ios_staging"
 end
 
-lane :before_ios_prod do
+lane :before_ios_prod do |options|
   UI.success "hook before_ios_prod"
 end
