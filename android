@@ -170,7 +170,9 @@ platform :android do
       options = build(options)
     end
 
-    store(options)
+    unless options[:skip_store]
+      store(options)
+    end
 
     after_android_staging(options)
   end
@@ -191,7 +193,9 @@ platform :android do
       options = build(options)
     end
 
-    store(options)
+    unless options[:skip_store]
+      store(options)
+    end
 
     after_android_prod(options)
   end
