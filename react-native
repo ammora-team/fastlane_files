@@ -49,14 +49,16 @@ platform :android do
 
     gradle_archive(options)
   end
+end
 
+platform :ios do
   lane :ios_archive_override do |options|
-    UI.success "Ios Archive react-native"
+      UI.success "Ios Archive react-native"
 
-    Dir.chdir "../ios" do
-      sh("pod", "install")
-    end
+      Dir.chdir "../ios" do
+        sh("pod", "install")
+      end
 
-    xcode_archive(options)
+      xcode_archive(options)
   end
 end
