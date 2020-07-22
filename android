@@ -17,26 +17,30 @@ def gradle_archive (options)
   keystore_alias = options[:keystore_alias] ? options[:keystore_alias] : ENV['KEYSTORE_ALIAS']
   passphrase = options[:passphrase] ? options[:passphrase] : ENV['KEYSTORE_PASSPHRARE']
 
-  system_properties = {}
+  system_properties = lane_context[:GRADLE_SYSTEM_PROPERTIES] ? lane_context[:GRADLE_SYSTEM_PROPERTIES] : {}
   if (password and keystore_alias and passphrase)
-    system_properties = {
+    credentials = {
       'KEYSTORE_FILE' =>  file,
       'KEYSTORE_PASSWORD' => password,
       'KEYSTORE_ALIAS' => keystore_alias,
       'KEYSTORE_PASSPHRARE' => passphrase
     }
+    system_properties.merge!(credentials)
   end
 
-  project_dir = options[:project_dir] ? options[:project_dir] : 'android/'
+  project_dir = options[:project_dir] ? options[:project_dir] : '.'
+
   if (options[:clean])
     gradle(task: 'clean', project_dir: project_dir)
   end
+
+  properties = lane_context[:GRADLE_PROPERTIES] ? lane_context[:GRADLE_PROPERTIES] : {}
 
   gradle(
     task: task,
     build_type: build_type,
     project_dir: project_dir,
-    properties: options[:properties],
+    properties: properties,
     system_properties: system_properties
   )
 
@@ -99,7 +103,7 @@ platform :android do
   end
 
   lane :version do |options|
-    properties = {}
+    properties = lane_context[:GRADLE_PROPERTIES] ? lane_context[:GRADLE_PROPERTIES] : {}
 
     version = options[:version] ? options[:version] : ENV['APP_VERSION']
     unless version.nil?
@@ -110,7 +114,7 @@ platform :android do
       properties[:versionCode] = options[:build_number]
     end
 
-    options[:properties] = properties
+    lane_context[:GRADLE_PROPERTIES] = properties
     
     options
   end
