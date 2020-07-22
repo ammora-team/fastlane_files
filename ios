@@ -10,9 +10,7 @@ def xcode_archive (options)
 
   if (ENV.key?('APP_XCWORKSPACE'))
     buildOptions[:workspace] = ENV['APP_XCWORKSPACE']
-  end
-
-  if (ENV.key?('APP_XCODEPROJ'))
+  elseif (ENV.key?('APP_XCODEPROJ'))
     buildOptions[:project] = ENV['APP_XCODEPROJ']
   end
 
