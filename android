@@ -133,17 +133,15 @@ platform :android do
     prepare(options)
 
     begin
-        options = android_archive_override(options)
+        android_archive_override(options)
     rescue
-        options = android_archive(options)
+        android_archive(options)
     end
 
     bitrise_env('BITRISE_DEPLOY_DIR', output_path())
 
     # after build
     after_android_build(options)
-
-    options
   end
 
   lane :dev do |options|
