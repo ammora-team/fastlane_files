@@ -110,17 +110,15 @@ platform :ios do
     prepare(options)
 
     begin
-        options = ios_archive_override(options)
+        ios_archive_override(options)
     rescue
-        options = ios_archive(options)
+        ios_archive(options)
     end
 
     bitrise_env('BITRISE_DEPLOY_DIR', output_path())
 
     # after build
     after_ios_build(options)
-
-    options
   end
 
   lane :dev do |options|
