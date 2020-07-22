@@ -11,6 +11,10 @@ def xcode_archive (options)
     options[:workspace] = ENV['APP_XCWORKSPACE']
   end
 
+  if (ENV.key?('APP_XCODEPROJ'))
+    options[:project] = ENV['APP_XCODEPROJ']
+  end
+
   export = 'development'
   configuration = 'Debug'
 
@@ -39,11 +43,13 @@ platform :ios do
   end
 
   lane :version do |options|
-    if (ENV['APP_XCODEPROJ'].empty?)
-      UI.user_error!("'xcodeproj' is required to version")
+    project = options[:project] ? options[:project] : ENV['APP_XCODEPROJ']
+    version = options[:version] ? options[:version] : ENV['APP_VERSION']
+
+    if (project.empty?)
+      return
     end
 
-    version = options[:version] ? options[:version] : ENV['APP_VERSION']
     unless version.nil?
       increment_version_number(
         xcodeproj: ENV['APP_XCODEPROJ'],
