@@ -117,8 +117,6 @@ platform :android do
   end
 
   lane :prepare do |options|
-    before_android_prepare(options)
-
     requirements(options)
     generate_google_services
     options[:keystore_file] = generate_jks
@@ -199,10 +197,6 @@ platform :android do
 
     after_android_prod(options)
   end
-end
-
-lane :before_android_prepare do |options|
-  UI.success "hook before_android_prepare"
 end
 
 lane :after_android_prepare do |options|

@@ -48,7 +48,7 @@ platform :ios do
         xcodeproj: ENV['APP_XCODEPROJ'],
         version_number: version
       )
-    elseif options[:version_bump].nil?
+    elsif options[:version_bump].nil?
       increment_version_number(
         xcodeproj: ENV['APP_XCODEPROJ'],
         bump_type: options[:version_bump]
@@ -95,8 +95,6 @@ platform :ios do
   end
 
   lane :prepare do |options|
-    before_ios_prepare(options)
-
     requirements(options)
     generate_google_services
 
@@ -190,10 +188,6 @@ platform :ios do
 
     after_ios_prod(options)
   end
-end
-
-lane :before_ios_prepare do |options|
-  UI.success "hook before_ios_prepare"
 end
 
 lane :after_ios_prepare do |options|
