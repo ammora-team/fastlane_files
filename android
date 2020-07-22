@@ -45,9 +45,6 @@ def gradle_archive (options)
   )
 
   path_build_type = build_type.downcase
-  if (lane_context[:SUPPLY_OPTIONS].empty?)
-    lane_context[:SUPPLY_OPTIONS] = {}
-  end
 
   if (is_bundle)
     file = "./android/app/build/outputs/bundle/#{path_build_type}/app-#{path_build_type}.aab"
@@ -126,6 +123,7 @@ platform :android do
   end
 
   lane :prepare do |options|
+    lane_context[:SUPPLY_OPTIONS] = {}
     requirements(options)
     generate_google_services
     options[:keystore_file] = generate_jks
