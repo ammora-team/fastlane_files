@@ -27,14 +27,15 @@ def gradle_archive (options)
     }
   end
 
+  project_dir = options[:project_dir] ? options[:project_dir] : 'android/'
   if (options[:clean])
-    gradle(task: 'clean', project_dir: 'android/')
+    gradle(task: 'clean', project_dir)
   end
 
   gradle(
     task: task,
     build_type: build_type,
-    project_dir: options[:project_dir] ? options[:project_dir] : 'android/',
+    project_dir: project_dir,
     properties: options[:properties],
     system_properties: system_properties
   )
@@ -42,18 +43,16 @@ def gradle_archive (options)
   path_build_type = build_type.downcase
   if (is_bundle)
     file = "./android/app/build/outputs/bundle/#{path_build_type}/app-#{path_build_type}.aab"
-    options[:aab] = file
+    Supply.config[:aab] = file
   else
     file = "./android/app/build/outputs/apk/#{path_build_type}/app-#{path_build_type}.apk"
-    options[:apk] = file
+    Supply.config[:apk] = file
   end
 
   Dir.chdir ".." do
     FileUtils.mkdir_p output_path()
     FileUtils.cp(file, output_path())
   end
-
-  return options
 end
 
 platform :android do
@@ -71,14 +70,14 @@ platform :android do
 
     defaultOptions = {
       package_name: ENV['APP_IDENTIFIER'],
-      track: 'alpha',
+      track: options[:track] ? options[:track] : 'alpha',
       json_key: json_key,
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true
     }
 
-    upload_to_play_store(defaultOptions.merge!(options))
+    upload_to_play_store(defaultOptions)
   end
 
   lane :android_archive do |options|
@@ -151,7 +150,7 @@ platform :android do
 
     options = version(options)
 
-    options = build(options)
+    build(options)
 
     after_android_dev(options)
   end
@@ -165,7 +164,7 @@ platform :android do
     version(options)
 
     unless options[:skip_build]
-      options = build(options)
+      build(options)
     end
 
     unless options[:skip_store]
@@ -188,7 +187,7 @@ platform :android do
     version(options)
 
     unless options[:skip_build]
-      options = build(options)
+      build(options)
     end
 
     unless options[:skip_store]
