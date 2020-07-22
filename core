@@ -5,6 +5,10 @@ def bitrise_env (var_name, value)
   end
 end
 
+def output_path ()
+  return ENV.key?('APP_OUTPUT_PATH') ? ENV['APP_OUTPUT_PATH'] : './deploy'
+end
+
 def requirements (options)
   UI.success "check requirements"
 end

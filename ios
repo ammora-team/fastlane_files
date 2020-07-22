@@ -3,36 +3,31 @@ def ios_archive (options)
 end
 
 def xcode_archive (options)
+  buildOptions = {}
   if (ENV.key?('APP_SCHEME'))
-    options[:scheme] = ENV['APP_SCHEME']
+    buildOptions[:scheme] = ENV['APP_SCHEME']
   end
 
   if (ENV.key?('APP_XCWORKSPACE'))
-    options[:workspace] = ENV['APP_XCWORKSPACE']
+    buildOptions[:workspace] = ENV['APP_XCWORKSPACE']
   end
 
   if (ENV.key?('APP_XCODEPROJ'))
-    options[:project] = ENV['APP_XCODEPROJ']
+    buildOptions[:project] = ENV['APP_XCODEPROJ']
   end
 
-  export = 'development'
-  configuration = 'Debug'
+  buildOptions[:export_method] = 'development'
+  buildOptions[:configuration] = 'Debug'
+  buildOptions[:output_directory] = output_path
 
   if (options[:env] === 'staging' || options[:env] === 'prod')
-    export = 'app-store'
-    configuration = 'Release'
+    buildOptions[:export_method] = 'app-store'
+    buildOptions[:configuration] = 'Release'
   end
 
-  # build
-  defaultOptions = {
-    export_method: export,
-    configuration: configuration,
-    output_directory: './deploy'
-  }
+  build_app(buildOptions)
 
-  build_app(defaultOptions.merge!(options))
-
-  return options
+  options.merge!(buildOptions)
 end
 
 platform :ios do
@@ -126,7 +121,7 @@ platform :ios do
         options = ios_archive(options)
     end
 
-    bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
+    bitrise_env('BITRISE_DEPLOY_DIR', output_path())
 
     # after build
     after_ios_build(options)

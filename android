@@ -49,8 +49,8 @@ def gradle_archive (options)
   end
 
   Dir.chdir ".." do
-    FileUtils.mkdir_p './deploy'
-    FileUtils.cp(file, "./deploy")
+    FileUtils.mkdir_p output_path()
+    FileUtils.cp(file, output_path())
   end
 
   return options
@@ -137,7 +137,7 @@ platform :android do
         options = android_archive(options)
     end
 
-    bitrise_env('BITRISE_DEPLOY_DIR', './deploy')
+    bitrise_env('BITRISE_DEPLOY_DIR', output_path())
 
     # after build
     after_android_build(options)
