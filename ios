@@ -43,21 +43,21 @@ platform :ios do
       return
     end
 
-    unless version.nil?
+    if (version)
       increment_version_number(
-        xcodeproj: ENV['APP_XCODEPROJ'],
+        xcodeproj: project,
         version_number: version
       )
-    elsif options[:version_bump].nil?
+    elsif (options[:version_bump])
       increment_version_number(
-        xcodeproj: ENV['APP_XCODEPROJ'],
+        xcodeproj: project,
         bump_type: options[:version_bump]
       )
     end
 
     unless options[:build_number].nil?
       increment_build_number(
-        xcodeproj: ENV['APP_XCODEPROJ'],
+        xcodeproj: project,
         build_number: options[:build_number]
       )
     end
