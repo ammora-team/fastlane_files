@@ -47,10 +47,10 @@ def gradle_archive (options)
   path_build_type = build_type.downcase
   if (is_bundle)
     file = "./android/app/build/outputs/bundle/#{path_build_type}/app-#{path_build_type}.aab"
-    Supply.config[:aab] = file
+    lane_context[:SUPPLY_OPTIONS][:aab] = file
   else
     file = "./android/app/build/outputs/apk/#{path_build_type}/app-#{path_build_type}.apk"
-    Supply.config[:apk] = file
+    lane_context[:SUPPLY_OPTIONS][:apk] = file
   end
 
   Dir.chdir ".." do
@@ -81,7 +81,9 @@ platform :android do
       skip_upload_screenshots: true
     }
 
-    upload_to_play_store(defaultOptions)
+    supply_options = lane_context[:SUPPLY_OPTIONS] ? lane_context[:SUPPLY_OPTIONS] : {}
+
+    upload_to_play_store(defaultOptions.merge!(supply_options))
   end
 
   lane :android_archive do |options|
