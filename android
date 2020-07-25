@@ -35,24 +35,35 @@ def gradle_archive (options)
   end
 
   properties = lane_context[:GRADLE_PROPERTIES] ? lane_context[:GRADLE_PROPERTIES] : {}
+  flavor = lane_context[:GRADLE_FLAVOR] ? lane_context[:GRADLE_FLAVOR] : ENV['GRADLE_FLAVOR']
+  flavor = options[:flavor] ? options[:flavor] : flavor
 
   gradle(
     task: task,
     build_type: build_type,
     project_dir: project_dir,
     properties: properties,
+    flavor: flavor,
     system_properties: system_properties
   )
 
   path_build_type = build_type.downcase
 
+  basename = "app-#{path_build_type}"
+  folder_type = "apk"
+  extension = "apk"
   if (is_bundle)
-    file = "./android/app/build/outputs/bundle/#{path_build_type}/app-#{path_build_type}.aab"
-    lane_context[:SUPPLY_OPTIONS][:aab] = file
-  else
-    file = "./android/app/build/outputs/apk/#{path_build_type}/app-#{path_build_type}.apk"
-    lane_context[:SUPPLY_OPTIONS][:apk] = file
+    folder_type = "bundle"
+    extension = "aab"
   end
+
+  if (flavor)
+    flavor_downcase = flavor.downcase
+    folder_type = "#{folder_type}/#{flavor_downcase}"
+    basename = "app-#{flavor_downcase}-#{path_build_type}"
+  end
+
+  lane_context[:SUPPLY_OPTIONS][extension] = "./android/app/build/outputs/#{folder_type}/#{path_build_type}/#{basename}.#{extension}"
 
   Dir.chdir ".." do
     FileUtils.mkdir_p output_path()
