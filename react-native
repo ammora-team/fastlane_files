@@ -1,12 +1,4 @@
-def react_native_path(skip_which = false)
-  if (skip_which)
-    gpg_cmd = `which react-native`
-
-    unless gpg_cmd.empty?
-      return 'react-native'
-    end
-  end
-
+def react_native_path
   Dir.chdir ".." do
     if File.file?('./node_modules/.bin/react-native')
       return './node_modules/.bin/react-native'
@@ -20,7 +12,7 @@ def requirements (options)
   is_install = react_native_path
 
   if (is_install == '')
-    UI.user_error!("'react-native' not installed")
+    UI.user_error!("Install 'react-native' in project node_modules")
   end
 end
 
@@ -31,10 +23,7 @@ platform :android do
     options[:project_dir] = './android/'
 
     if (options[:env] != 'staging' && options[:env] != 'prod')
-      cmd_react_native = react_native_path(skip_which: true)
-      if (cmd_react_native === '')
-        UI.user_error!('Install react-native in project')
-      end
+      cmd_react_native = react_native_path
 
       Dir.chdir ".." do
         sh(
