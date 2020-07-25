@@ -45,7 +45,7 @@ platform :android do
       end
     end
 
-    options[:project_dir] = 'android/'
+    options[:project_dir] = './android/'
 
     gradle_archive(options)
   end
