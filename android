@@ -30,7 +30,7 @@ def gradle_archive (options)
 
   project_dir = options[:project_dir] ? options[:project_dir] : '.'
 
-  UI.success "Android project_dir #{project_dir}"
+  UI.success "Android project_dir 2 #{project_dir}"
 
   if (options[:clean])
     gradle(task: 'clean', project_dir: project_dir)

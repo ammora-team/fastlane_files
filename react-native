@@ -47,7 +47,7 @@ platform :android do
 
     options[:project_dir] = './android/'
 
-    UI.success "Android project_dir #{project_dir}"
+    UI.success "Android project_dir 1 #{project_dir}"
 
     gradle_archive(options)
   end
