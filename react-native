@@ -1,8 +1,10 @@
 def react_native_path(skipGlobal = false)
-  gpg_cmd = `which react-native`
+  if (skipGlobal)
+    gpg_cmd = `which react-native`
 
-  unless gpg_cmd.empty?
-    return 'react-native'
+    unless gpg_cmd.empty?
+      return 'react-native'
+    end
   end
 
   Dir.chdir ".." do
