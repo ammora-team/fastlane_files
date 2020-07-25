@@ -30,8 +30,6 @@ def gradle_archive (options)
 
   project_dir = options[:project_dir] ? options[:project_dir] : '.'
 
-  UI.success "Android project_dir 2 #{project_dir}"
-
   if (options[:clean])
     gradle(task: 'clean', project_dir: project_dir)
   end
@@ -64,6 +62,10 @@ def gradle_archive (options)
     folder_type = "#{folder_type}/#{flavor_downcase}"
     basename = "app-#{flavor_downcase}-#{path_build_type}"
   end
+
+  UI.success "folder_type #{folder_type}"
+  binary_path = "./android/app/build/outputs/#{folder_type}/#{path_build_type}/#{basename}.#{extension}"
+  UI.success "path #{binary_path}"
 
   lane_context[:SUPPLY_OPTIONS][extension] = "./android/app/build/outputs/#{folder_type}/#{path_build_type}/#{basename}.#{extension}"
 
