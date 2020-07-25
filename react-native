@@ -26,6 +26,8 @@ platform :android do
   lane :android_archive_override do |options|
     UI.success "Android Archive react-native"
 
+    options[:project_dir] = './android/'
+
     if (options[:env] != 'staging' && options[:env] != 'prod')
       cmd_react_native = react_native_path()
       Dir.chdir ".." do
@@ -44,10 +46,6 @@ platform :android do
         )
       end
     end
-
-    options[:project_dir] = './android/'
-
-    UI.success "Android project_dir 1 #{project_dir}"
 
     gradle_archive(options)
   end
