@@ -63,15 +63,13 @@ def gradle_archive (options)
     basename = "app-#{flavor_downcase}-#{path_build_type}"
   end
 
-  UI.success "folder_type #{folder_type}"
-  binary_path = "./android/app/build/outputs/#{folder_type}/#{path_build_type}/#{basename}.#{extension}"
-  UI.success "path #{binary_path}"
+  binary_file = "./android/app/build/outputs/#{folder_type}/#{path_build_type}/#{basename}.#{extension}"
 
-  lane_context[:SUPPLY_OPTIONS][extension] = "./android/app/build/outputs/#{folder_type}/#{path_build_type}/#{basename}.#{extension}"
+  lane_context[:SUPPLY_OPTIONS][extension] = binary_file
 
   Dir.chdir ".." do
     FileUtils.mkdir_p output_path()
-    FileUtils.cp(file, output_path())
+    FileUtils.cp(binary_file, output_path())
   end
 end
 
