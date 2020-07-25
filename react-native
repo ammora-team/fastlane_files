@@ -1,5 +1,5 @@
-def react_native_path(skipGlobal = false)
-  if (skipGlobal)
+def react_native_path(skip_which = false)
+  if (skip_which)
     gpg_cmd = `which react-native`
 
     unless gpg_cmd.empty?
@@ -31,7 +31,7 @@ platform :android do
     options[:project_dir] = './android/'
 
     if (options[:env] != 'staging' && options[:env] != 'prod')
-      cmd_react_native = react_native_path(true)
+      cmd_react_native = react_native_path(skip_which: true)
       if (cmd_react_native === '')
         UI.user_error!('Install react-native in project')
       end
