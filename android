@@ -57,18 +57,19 @@ def gradle_archive (options)
     extension = "aab"
   end
 
+  folder = "#{folder_type}/#{path_build_type}"
   if (flavor)
     flavor_downcase = flavor.downcase
     if (is_bundle)
-      folder_type = "#{folder_type}/#{flavor_downcase}#{path_build_type.capitalize()}"
+      folder = "#{folder_type}/#{flavor_downcase}#{path_build_type.capitalize()}"
       basename = "app.aab"
     else
-      folder_type = "#{folder_type}/#{flavor_downcase}"
+      folder = "#{folder}/#{flavor_downcase}"
       basename = "app-#{flavor_downcase}-#{path_build_type}"
     end
   end
 
-  binary_file = "./android/app/build/outputs/#{folder_type}/#{path_build_type}/#{basename}.#{extension}"
+  binary_file = "./android/app/build/outputs/#{folder}/#{basename}.#{extension}"
 
   lane_context[:SUPPLY_OPTIONS][extension] = binary_file
 
