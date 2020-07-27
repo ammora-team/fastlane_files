@@ -64,7 +64,7 @@ def gradle_archive (options)
       folder = "#{folder_type}/#{flavor_downcase}#{path_build_type.capitalize()}"
       basename = "app"
     else
-      folder = "#{folder}/#{flavor_downcase}"
+      folder = "#{folder_type}/#{flavor_downcase}"
       basename = "app-#{flavor_downcase}-#{path_build_type}"
     end
   end
