@@ -61,6 +61,10 @@ def gradle_archive (options)
     flavor_downcase = flavor.downcase
     folder_type = "#{folder_type}/#{flavor_downcase}"
     basename = "app-#{flavor_downcase}-#{path_build_type}"
+    if (is_bundle)
+      folder_type = "#{folder_type}/#{flavor_downcase}#{path_build_type.capitalize()}"
+      basename = "app.aab"
+    end
   end
 
   binary_file = "./android/app/build/outputs/#{folder_type}/#{path_build_type}/#{basename}.#{extension}"
